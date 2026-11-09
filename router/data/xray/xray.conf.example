@@ -1,0 +1,17 @@
+# Tunnel server settings. Installed to /data/xray/xray.conf on the router.
+# Normally you set these from the web panel (paste a trojan:// vless:// ss:// share link),
+# which rewrites this file; edit by hand only if you have no panel access.
+# Sourced by a shell script: keep the single quotes.
+PROTO='trojan'
+ADDR='your-server.example.com'
+PORT='443'
+SECRET='change-me'
+SSMETHOD=''
+NETWORK='tcp'
+SECURITY='tls'
+SNI='your-server.example.com'
+FP='chrome'
+WSPATH=''
+WSHOST=''
+PIN=''
+REDIRECT_ENABLE=0

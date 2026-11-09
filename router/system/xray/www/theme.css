@@ -1,0 +1,95 @@
+/* V2Ray for Huawei - shared theme (login + panel). Self-contained: no web fonts or CDNs, the panel must load with the tunnel down. */
+:root{
+  --bg:#060914;--bg2:#0b1022;
+  --glass:rgba(16,22,42,.62);--glass2:rgba(22,30,56,.55);--inset:rgba(4,7,18,.55);
+  --line:rgba(148,163,255,.12);--line2:rgba(148,163,255,.22);
+  --txt:#e8ecf8;--mut:#93a0bd;--dim:#5d6886;
+  --c1:#22d3ee;--c2:#818cf8;--c3:#c084fc;
+  --grad:linear-gradient(135deg,var(--c1),var(--c2) 55%,var(--c3));
+  --ok:#34d399;--bad:#fb7185;--warn:#fbbf24;
+  --r:18px;--r2:12px;
+  --shadow:0 20px 50px -20px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.02) inset;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif;font-size:15px;line-height:1.45;color:var(--txt);background:var(--bg);-webkit-font-smoothing:antialiased}
+a{color:var(--c1);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:rgba(129,140,248,.35)}
+
+/* ---- background: aurora glows + fading grid + vignette ---- */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+  background:
+    radial-gradient(1100px 700px at 8% -12%,rgba(37,99,235,.28),transparent 60%),
+    radial-gradient(900px 650px at 105% 5%,rgba(147,51,234,.24),transparent 58%),
+    radial-gradient(1000px 800px at 50% 115%,rgba(13,148,136,.22),transparent 60%),
+    linear-gradient(180deg,var(--bg2),var(--bg) 60%)}
+.bg .blob{position:absolute;border-radius:50%;opacity:.55;will-change:transform;animation:drift 26s ease-in-out infinite alternate}
+.bg .b1{width:46vmax;height:46vmax;left:-14vmax;top:-16vmax;background:radial-gradient(circle,rgba(34,211,238,.38),transparent 62%)}
+.bg .b2{width:42vmax;height:42vmax;right:-16vmax;top:12vh;background:radial-gradient(circle,rgba(192,132,252,.34),transparent 62%);animation-duration:32s;animation-delay:-9s}
+.bg .b3{width:50vmax;height:50vmax;left:22vw;bottom:-30vmax;background:radial-gradient(circle,rgba(99,102,241,.30),transparent 62%);animation-duration:38s;animation-delay:-17s}
+.bg .grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(148,163,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,255,.07) 1px,transparent 1px);
+  background-size:46px 46px;
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 25%,transparent 75%);mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 25%,transparent 75%)}
+.bg .noise{position:absolute;inset:0;opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@keyframes drift{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(6vw,4vh,0) scale(1.08)}100%{transform:translate3d(-4vw,8vh,0) scale(.95)}}
+
+/* ---- glass surfaces ---- */
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass{background:rgba(14,19,36,.94)}}
+
+/* ---- brand ---- */
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.logo{width:38px;height:38px;flex:none;border-radius:11px;display:grid;place-items:center;background:var(--grad);box-shadow:0 6px 22px -6px rgba(129,140,248,.7)}
+.logo svg{width:22px;height:22px}
+.brand .name{font-weight:750;font-size:17px;letter-spacing:-.01em;white-space:nowrap}
+.brand .name span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .by{display:block;font-size:11.5px;color:var(--mut);margin-top:1px;white-space:nowrap}
+.brand .by:hover{color:var(--c1);text-decoration:none}
+
+/* ---- icons ---- */
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ic.fill{fill:currentColor;stroke:none}
+
+/* ---- controls ---- */
+button,.btn{font:inherit;font-weight:650;font-size:14.5px;border:0;border-radius:var(--r2);padding:11px 16px;min-height:44px;color:#fff;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;
+  background:var(--grad);box-shadow:0 8px 24px -10px rgba(129,140,248,.8);transition:transform .15s,filter .15s,opacity .15s,background .2s}
+button:hover,.btn:hover{filter:brightness(1.08);text-decoration:none}
+button:active,.btn:active{transform:translateY(1px) scale(.99)}
+button:focus-visible,.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+button.ghost,.btn.ghost{background:rgba(148,163,255,.08);color:var(--txt);box-shadow:inset 0 0 0 1px var(--line2)}
+button.ghost:hover,.btn.ghost:hover{background:rgba(148,163,255,.14)}
+button.start{background:linear-gradient(135deg,#10b981,#22d3ee);box-shadow:0 8px 24px -10px rgba(16,185,129,.8)}
+button.stop{background:linear-gradient(135deg,#f43f5e,#f97316);box-shadow:0 8px 24px -10px rgba(244,63,94,.8)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none}
+button.busy{pointer-events:none}
+button.busy::after{content:"";width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:14px 0 6px;letter-spacing:.01em}
+input,select{width:100%;padding:11px 13px;background:var(--inset);color:var(--txt);border:1px solid var(--line);border-radius:var(--r2);font:inherit;transition:border-color .15s,box-shadow .15s}
+input::placeholder{color:var(--dim)}
+input:focus,select:focus{border-color:rgba(34,211,238,.55);box-shadow:0 0 0 3px rgba(34,211,238,.15);outline:none}
+select{appearance:none;-webkit-appearance:none;padding-right:34px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393a0bd' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;background-size:16px}
+select option{background:#0f1530}
+
+/* ---- toast ---- */
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(90px);max-width:min(92vw,480px);padding:12px 16px;border-radius:14px;
+  background:rgba(18,25,48,.92);border:1px solid var(--line2);box-shadow:var(--shadow);opacity:0;transition:.28s cubic-bezier(.2,.8,.2,1);z-index:50;font-size:14px;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+#toast.err{border-color:rgba(251,113,133,.55);color:#fecdd3}
+
+/* ---- footer ---- */
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;font-size:12.5px;color:var(--dim);padding:22px 16px 30px;text-align:center}
+.foot a{color:var(--mut);display:inline-flex;align-items:center;gap:6px}
+.foot a:hover{color:var(--txt);text-decoration:none}
+.foot .ic{width:15px;height:15px}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

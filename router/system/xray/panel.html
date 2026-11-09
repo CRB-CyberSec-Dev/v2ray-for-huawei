@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#060914">
+<title>V2Ray for Huawei</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%23c084fc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M9 9l7 15 7-15' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* header */
+.top{position:sticky;top:0;z-index:20;background:rgba(6,9,20,.6);border-bottom:1px solid var(--line);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%)}
+.top .wrap{max-width:1120px;margin:0 auto;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.top .brand{flex:1}
+.tabs{display:flex;gap:4px;padding:4px;border-radius:13px;background:var(--inset);border:1px solid var(--line)}
+.tab{padding:7px 14px;border-radius:9px;color:var(--mut);font-weight:650;font-size:13.5px;display:inline-flex;gap:7px;align-items:center;transition:background .2s,color .2s}
+.tab .ic{width:16px;height:16px}
+.tab:hover{color:var(--txt);text-decoration:none}
+.tab.sel{background:rgba(148,163,255,.16);color:#fff;box-shadow:inset 0 0 0 1px var(--line2)}
+.pill{padding:5px 11px;border-radius:999px;font-size:11.5px;font-weight:750;letter-spacing:.06em;background:rgba(148,163,255,.1);color:var(--mut);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.on{background:rgba(52,211,153,.12);color:var(--ok)}
+.pill.on::before{box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:ping 2s infinite}
+.pill.warn{background:rgba(251,191,36,.12);color:var(--warn)}
+.pill.off{background:rgba(251,113,133,.12);color:var(--bad)}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}80%,100%{box-shadow:0 0 0 7px rgba(52,211,153,0)}}
+button.out{min-height:36px;padding:7px 12px;font-size:13.5px}
+#offline{display:none;max-width:1088px;width:calc(100% - 32px);margin:12px auto 0;padding:10px 14px;border-radius:12px;background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.35);color:#fecdd3;font-size:13.5px;text-align:center}
+@media(max-width:680px){.tabs{order:3;flex:1 1 100%}.tab{flex:1;justify-content:center}button.out .lbl{display:none}button.out{padding:7px 10px}}
+
+/* layout */
+.view{max-width:1120px;margin:0 auto;padding:18px 16px 0;display:grid;gap:16px;grid-template-columns:repeat(12,minmax(0,1fr))}
+.view[hidden]{display:none}
+.s12{grid-column:span 12}.s7{grid-column:span 7}.s6{grid-column:span 6}.s5{grid-column:span 5}
+@media(max-width:860px){.s7,.s6,.s5{grid-column:span 12}}
+.card{padding:20px;min-width:0;animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.view .card:nth-child(2){animation-delay:.05s}.view .card:nth-child(3){animation-delay:.1s}.view .card:nth-child(4){animation-delay:.15s}.view .card:nth-child(5){animation-delay:.2s}.view .card:nth-child(6){animation-delay:.25s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ch{display:flex;align-items:center;gap:11px;margin:0 0 14px}
+.ch h2{margin:0;font-size:15px;font-weight:700;letter-spacing:-.005em;flex:1}
+.ch .aside{font-size:12px;color:var(--mut);font-weight:500}
+.ib{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;color:var(--c1);background:rgba(34,211,238,.1);box-shadow:inset 0 0 0 1px rgba(34,211,238,.2)}
+.ib.v{color:var(--c3);background:rgba(192,132,252,.1);box-shadow:inset 0 0 0 1px rgba(192,132,252,.22)}
+.ib.i{color:var(--c2);background:rgba(129,140,248,.1);box-shadow:inset 0 0 0 1px rgba(129,140,248,.22)}
+.ib.g{color:var(--ok);background:rgba(52,211,153,.1);box-shadow:inset 0 0 0 1px rgba(52,211,153,.22)}
+.hint{font-size:13px;color:var(--mut);margin:10px 0 0;line-height:1.5}
+.sub2{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin:20px 0 8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) auto;gap:20px;align-items:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;background:radial-gradient(600px 200px at 0% 0%,rgba(34,211,238,.12),transparent 70%)}
+.hstat{display:flex;align-items:center;gap:16px;min-width:0}
+.orb{width:68px;height:68px;border-radius:50%;flex:none;display:grid;place-items:center;position:relative;color:var(--mut);background:rgba(148,163,255,.08);box-shadow:inset 0 0 0 1px var(--line2);transition:.4s}
+.orb .ic{width:30px;height:30px}
+.orb.on{color:#fff;background:linear-gradient(135deg,#10b981,#22d3ee);box-shadow:0 0 34px -4px rgba(34,211,238,.75)}
+.orb.on::before,.orb.on::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(34,211,238,.55);animation:ring 2.6s cubic-bezier(.2,.6,.3,1) infinite}
+.orb.on::after{animation-delay:1.3s}
+.orb.off{color:#fff;background:linear-gradient(135deg,#f43f5e,#f97316);box-shadow:0 0 30px -6px rgba(244,63,94,.7)}
+@keyframes ring{from{transform:scale(1);opacity:.9}to{transform:scale(1.65);opacity:0}}
+.eyebrow{font-size:11.5px;font-weight:750;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+.htxt{font-size:25px;font-weight:780;letter-spacing:-.02em;margin:2px 0 0}
+.hero .hint{margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:var(--inset);border:1px solid var(--line);border-radius:14px;padding:11px 12px;min-width:0}
+.stat span{display:block;font-size:11px;color:var(--mut);font-weight:600}
+.stat b{display:block;font-size:17px;font-weight:750;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbtns{display:flex;flex-direction:column;gap:8px;min-width:170px}
+@media(max-width:860px){.hero{grid-template-columns:1fr}.hbtns{flex-direction:row}.hbtns button{flex:1}}
+
+/* monitor */
+.mon{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+@media(max-width:560px){.mon{grid-template-columns:1fr 1fr}.tile .vl{font-size:18px}.card{padding:16px}}
+.tile{background:var(--inset);border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.tile .lb{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+.tile .vl{font-size:21px;font-weight:780;letter-spacing:-.01em;margin:3px 0 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .sub{font-size:11.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile svg{width:100%;height:36px;display:block;margin-top:6px;overflow:visible}
+.tile .bar{height:6px;border-radius:3px;background:rgba(148,163,255,.1);overflow:hidden;margin-top:8px}
+.tile .bar i{display:block;height:100%;width:0;border-radius:3px;background:var(--ok);transition:width .5s,background .5s}
+.live{display:inline-flex;align-items:center;gap:6px}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);animation:ping 2s infinite}
+.live.dead::before{background:var(--bad);animation:none}
+
+/* switches + segmented */
+.sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;background:var(--inset);border:1px solid var(--line);border-radius:14px}
+.sw .name{font-weight:650}
+.sw .desc{font-size:12.5px;color:var(--mut);margin-top:2px}
+button.toggle{width:56px;height:32px;min-height:32px;padding:0;border-radius:999px;position:relative;flex:none;background:rgba(148,163,255,.14);box-shadow:inset 0 0 0 1px var(--line2)}
+button.toggle::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:left .22s cubic-bezier(.2,.8,.2,1)}
+button.toggle.on{background:linear-gradient(135deg,#10b981,#22d3ee);box-shadow:0 0 20px -6px rgba(34,211,238,.8)}
+button.toggle.on::after{left:28px}
+button.toggle.busy::after{border:0;animation:none;opacity:.6;width:24px;height:24px}
+.seg{display:flex;padding:4px;gap:4px;background:var(--inset);border:1px solid var(--line);border-radius:14px}
+.seg button{flex:1;min-height:40px;padding:8px 10px;background:transparent;box-shadow:none;color:var(--mut);font-weight:650}
+.seg button:hover{color:var(--txt);background:rgba(148,163,255,.08)}
+.seg button.sel{background:var(--grad);color:#fff;box-shadow:0 6px 18px -8px rgba(129,140,248,.9)}
+
+/* exit ip / server */
+.ipv{font-size:28px;font-weight:800;letter-spacing:-.02em;margin:4px 0 14px;word-break:break-all;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cfg{font-size:15px;font-weight:650;padding:12px 14px;background:var(--inset);border:1px solid var(--line);border-radius:14px;word-break:break-word}
+details.ed{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+details summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-weight:650;color:var(--c1);padding:8px 0;user-select:none}
+details summary::-webkit-details-marker{display:none}
+details summary .ic{transition:transform .2s}
+details[open] summary .ic{transform:rotate(90deg)}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0 12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.row .grow{flex:1}
+.or{display:flex;align-items:center;gap:10px;color:var(--dim);font-size:12px;margin:18px 0 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+pre{background:rgba(2,4,12,.8);color:#a7f3d0;padding:12px 14px;border-radius:12px;border:1px solid var(--line);overflow:auto;max-height:300px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-all;margin:8px 0 0}
+
+/* about */
+.ahero{text-align:center;padding:38px 20px 30px;position:relative;overflow:hidden}
+.ahero::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(500px 220px at 50% 0%,rgba(129,140,248,.22),transparent 70%)}
+.logo.xl{width:76px;height:76px;border-radius:22px;margin:0 auto 16px;box-shadow:0 14px 44px -10px rgba(129,140,248,.9)}
+.logo.xl svg{width:42px;height:42px}
+.ahero h1{margin:0;font-size:clamp(28px,6vw,40px);font-weight:820;letter-spacing:-.03em}
+.ahero h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{max-width:620px;margin:10px auto 0;color:var(--mut);font-size:15.5px;line-height:1.55}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:18px}
+.chip{font-size:12px;font-weight:650;padding:6px 11px;border-radius:999px;background:rgba(148,163,255,.1);border:1px solid var(--line);color:var(--txt)}
+.dev{text-align:center}
+.avatar{width:88px;height:88px;margin:4px auto 14px;border-radius:50%;display:grid;place-items:center;font-size:26px;font-weight:820;letter-spacing:.02em;color:#fff;background:var(--grad);box-shadow:0 0 0 4px rgba(6,9,20,.8),0 0 0 6px rgba(129,140,248,.45),0 18px 40px -12px rgba(129,140,248,.8)}
+.dname{font-size:19px;font-weight:780;letter-spacing:-.01em}
+.drole{color:var(--mut);font-size:13.5px;margin-top:2px}
+.dev .row{justify-content:center;margin-top:18px}
+.dev .btn{flex:1;min-width:130px}
+.flist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.flist li{display:flex;gap:12px;align-items:flex-start}
+.flist li .ib{width:30px;height:30px;border-radius:9px}
+.flist li .ib .ic{width:16px;height:16px}
+.flist b{display:block;font-size:14px}
+.flist span{font-size:13px;color:var(--mut)}
+.credits p{margin:0 0 8px;font-size:13.5px;color:var(--mut)}
+.credits p:last-child{margin:0}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><i class="grid"></i><i class="noise"></i></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><path d="M12 20h.01"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="8" rx="2"/><rect x="2" y="13" width="20" height="8" rx="2"/><path d="M6 7h.01M6 17h.01"/></symbol>
+  <symbol id="i-term" viewBox="0 0 24 24"><path d="m4 17 6-6-6-6"/><path d="M12 19h8"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.42.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .3"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l7 13 7-13"/></svg></div>
+      <div style="min-width:0">
+        <div class="name"><span>V2Ray</span> for Huawei</div>
+        <a class="by" href="https://github.com/CRB-CyberSec-Dev/" target="_blank" rel="noopener noreferrer">by CRB-CyberSec-Dev</a>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      <a class="tab sel" href="#dashboard" data-view="dashboard"><svg class="ic"><use href="#i-grid"/></svg>Dashboard</a>
+      <a class="tab" href="#about" data-view="about"><svg class="ic"><use href="#i-info"/></svg>About</a>
+    </nav>
+    <span id="pill" class="pill">...</span>
+    <button id="bOut" class="ghost out" title="Sign out"><svg class="ic"><use href="#i-out"/></svg><span class="lbl">Sign out</span></button>
+  </div>
+</header>
+<div id="offline">Cannot reach the router panel. Retrying...</div>
+
+<main id="vDash" class="view">
+  <section class="card glass s12 hero">
+    <div class="hstat">
+      <div id="tdot" class="orb"><svg class="ic"><use href="#i-shield"/></svg></div>
+      <div style="min-width:0">
+        <div class="eyebrow">Tunnel status</div>
+        <div id="ttxt" class="htxt">Checking...</div>
+        <p class="hint" id="tHint"></p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span>Uptime</span><b id="sUp">-</b></div>
+      <div class="stat"><span>Xray memory</span><b id="sMem">-</b></div>
+      <div class="stat"><span>Router load</span><b id="sLoad">-</b></div>
+    </div>
+    <div class="hbtns">
+      <button id="bToggle" class="grow" disabled>...</button>
+      <button id="bRestart" class="ghost" data-act="restart"><svg class="ic"><use href="#i-refresh"/></svg>Restart</button>
+    </div>
+  </section>
+
+  <section class="card glass s12">
+    <div class="ch"><div class="ib"><svg class="ic"><use href="#i-activity"/></svg></div><h2>Live monitor</h2><span class="aside live" id="monAge">connecting</span></div>
+    <div class="mon">
+      <div class="tile"><div class="lb">Router CPU</div><div class="vl" id="mCpu">-</div><div class="bar"><i id="bCpu"></i></div><svg id="gCpu" viewBox="0 0 100 30" preserveAspectRatio="none"></svg></div>
+      <div class="tile"><div class="lb">RAM used</div><div class="vl" id="mRam">-</div><div class="bar"><i id="bRam"></i></div><div class="sub" id="mRamSub" style="margin-top:6px">-</div></div>
+      <div class="tile"><div class="lb">Download (WAN)</div><div class="vl" id="mDn">-</div><div class="sub" id="mDnSub">-</div><svg id="gDn" viewBox="0 0 100 30" preserveAspectRatio="none"></svg></div>
+      <div class="tile"><div class="lb">Upload (WAN)</div><div class="vl" id="mUp">-</div><div class="sub" id="mUpSub">-</div><svg id="gUp" viewBox="0 0 100 30" preserveAspectRatio="none"></svg></div>
+      <div class="tile"><div class="lb">Xray</div><div class="vl" id="mX">-</div><div class="sub" id="mXSub">-</div><svg id="gX" viewBox="0 0 100 30" preserveAspectRatio="none"></svg></div>
+      <div class="tile"><div class="lb">UDP relay</div><div class="vl" id="mR">-</div><div class="sub" id="mRSub">-</div></div>
+      <div class="tile"><div class="lb">Connections</div><div class="vl" id="mConn">-</div><div class="bar"><i id="bConn"></i></div><div class="sub" id="mConnSub" style="margin-top:6px">-</div></div>
+      <div class="tile"><div class="lb">Load average</div><div class="vl" id="mLoad">-</div><div class="sub" id="mLoadSub">-</div></div>
+      <div class="tile"><div class="lb">Router uptime</div><div class="vl" id="mUpt">-</div><div class="sub" id="mTemp"></div></div>
+    </div>
+  </section>
+
+  <section class="card glass s7">
+    <div class="ch"><div class="ib g"><svg class="ic"><use href="#i-wifi"/></svg></div><h2>Whole-LAN protection</h2></div>
+    <div class="sw">
+      <div><div class="name">Tunnel all WiFi / LAN traffic</div><div class="desc">Every device on this router, no apps needed</div></div>
+      <button id="bRed" class="toggle" aria-label="LAN redirect"></button>
+    </div>
+    <p class="hint" id="rHint"></p>
+    <div class="sub2">UDP traffic</div>
+    <div class="seg"><button id="uDirect">Direct</button><button id="uTunnel">Tunnel</button><button id="uBlock">Block</button></div>
+    <p class="hint" id="uHint"></p>
+  </section>
+
+  <section class="card glass s5">
+    <div class="ch"><div class="ib i"><svg class="ic"><use href="#i-globe"/></svg></div><h2>Exit IP</h2><span class="aside">seen by this device</span></div>
+    <div class="ipv" id="ip">-</div>
+    <button id="bIp" class="ghost" style="width:100%"><svg class="ic"><use href="#i-globe"/></svg>Check IP</button>
+    <p class="hint">Uses this browser's own connection, so it shows the tunnel IP when LAN protection is on and this device is on the router's WiFi.</p>
+  </section>
+
+  <section class="card glass s12">
+    <div class="ch"><div class="ib v"><svg class="ic"><use href="#i-server"/></svg></div><h2>Server</h2></div>
+    <div id="cfgSum" class="cfg">-</div>
+    <div class="sub2">Encryption</div>
+    <div class="seg"><button id="cFast"><svg class="ic"><use href="#i-zap"/></svg>Fast (ChaCha20)</button><button id="cCompat"><svg class="ic"><use href="#i-lock"/></svg>Compatible (AES)</button></div>
+    <p class="hint" id="cHint"></p>
+    <details class="ed">
+      <summary><svg class="ic"><use href="#i-chev"/></svg>Edit server settings</summary>
+      <label for="link">Paste share link (trojan:// vless:// ss://)</label>
+      <div class="row" style="margin-top:0">
+        <input id="link" class="grow" style="flex:1;min-width:220px" placeholder="trojan://password@host:443?security=tls&amp;sni=example.com">
+        <button id="bLink"><svg class="ic"><use href="#i-link"/></svg>Apply link</button>
+      </div>
+      <div class="or">or enter the settings manually</div>
+      <div class="grid3">
+        <div><label for="proto">Protocol</label><select id="proto"><option>trojan</option><option>vless</option><option>shadowsocks</option></select></div>
+        <div><label for="network">Network</label><select id="network"><option>tcp</option><option>ws</option></select></div>
+        <div><label for="security">Security</label><select id="security"><option>tls</option><option>none</option></select></div>
+      </div>
+      <div class="grid3">
+        <div style="grid-column:span 2"><label for="addr">Server address</label><input id="addr"></div>
+        <div><label for="port">Port</label><input id="port" inputmode="numeric"></div>
+      </div>
+      <div class="grid3">
+        <div><label for="secret">Password / UUID</label><input id="secret" type="password" placeholder="unchanged if empty"></div>
+        <div><label for="sni">SNI</label><input id="sni"></div>
+      </div>
+      <div class="grid3">
+        <div><label for="fp">uTLS fingerprint</label><input id="fp"></div>
+        <div><label for="ssmethod">SS method</label><input id="ssmethod" placeholder="aes-256-gcm"></div>
+      </div>
+      <label for="pin">Certificate pin (sha256 hex)</label><input id="pin">
+      <div class="grid3">
+        <div><label for="wspath">WS path</label><input id="wspath"></div>
+        <div><label for="wshost">WS host</label><input id="wshost"></div>
+      </div>
+      <div class="row"><button id="bManual" class="grow">Apply settings</button></div>
+    </details>
+  </section>
+
+  <section class="card glass s12">
+    <details id="logd">
+      <summary><svg class="ic"><use href="#i-chev"/></svg><span style="display:inline-flex;align-items:center;gap:8px"><svg class="ic"><use href="#i-term"/></svg>Logs</span></summary>
+      <pre id="log">...</pre>
+    </details>
+  </section>
+</main>
+
+<main id="vAbout" class="view" hidden>
+  <section class="card glass s12 ahero">
+    <div class="logo xl"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l7 13 7-13"/></svg></div>
+    <h1><span>V2Ray</span> for Huawei</h1>
+    <p class="lead">A self-hosted V2Ray / Xray tunnel that runs directly on a Huawei LTE router, with a web panel to control it from any phone or laptop on your network.</p>
+    <div class="chips"><span class="chip">Panel 1.0</span><span class="chip">Huawei B310s-925</span><span class="chip">Xray-core (V2Ray compatible)</span><span class="chip">Trojan · VLESS · Shadowsocks</span></div>
+  </section>
+
+  <section class="card glass s5 dev">
+    <div class="ch"><div class="ib v"><svg class="ic"><use href="#i-heart"/></svg></div><h2 style="text-align:left">Developer</h2></div>
+    <div class="avatar">CRB</div>
+    <div class="dname">Chamal Ranasinghe Bandara</div>
+    <div class="drole">CRB-CyberSec-Dev</div>
+    <div class="row">
+      <a class="btn" href="https://github.com/CRB-CyberSec-Dev/" target="_blank" rel="noopener noreferrer"><svg class="ic fill"><use href="#i-gh"/></svg>GitHub</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/chamal-bandara/" target="_blank" rel="noopener noreferrer"><svg class="ic fill"><use href="#i-in"/></svg>LinkedIn</a>
+    </div>
+  </section>
+
+  <section class="card glass s7">
+    <div class="ch"><div class="ib"><svg class="ic"><use href="#i-zap"/></svg></div><h2>What it does</h2></div>
+    <ul class="flist">
+      <li><div class="ib g"><svg class="ic"><use href="#i-wifi"/></svg></div><div><b>Whole-LAN tunnel</b><span>Every device on the router's WiFi and LAN goes through the encrypted tunnel, with nothing to install on them.</span></div></li>
+      <li><div class="ib i"><svg class="ic"><use href="#i-shield"/></svg></div><div><b>UDP control</b><span>Tunnel, block or pass UDP: QUIC, calls and WebRTC leak protection.</span></div></li>
+      <li><div class="ib"><svg class="ic"><use href="#i-zap"/></svg></div><div><b>Fast on small hardware</b><span>TLS 1.3 with ChaCha20, about twice as fast as AES on this router's CPU.</span></div></li>
+      <li><div class="ib v"><svg class="ic"><use href="#i-refresh"/></svg></div><div><b>Self-healing</b><span>Starts at boot, and a watchdog restarts the tunnel and firewall rules if anything drops.</span></div></li>
+      <li><div class="ib i"><svg class="ic"><use href="#i-lock"/></svg></div><div><b>Router-account login</b><span>Sign in with the router's own admin account; the password is hashed in your browser.</span></div></li>
+    </ul>
+  </section>
+
+  <section class="card glass s12 credits">
+    <div class="ch"><div class="ib i"><svg class="ic"><use href="#i-info"/></svg></div><h2>Credits &amp; notes</h2></div>
+    <p>Built on <a href="https://github.com/XTLS/Xray-core" target="_blank" rel="noopener noreferrer">Xray-core</a> by Project X (MPL-2.0) and BusyBox (GPL-2.0). Not affiliated with Huawei, Project V or Project X.</p>
+    <p>Use only on devices and networks you own or are authorized to manage.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>V2Ray for Huawei</span>
+  <a href="https://github.com/CRB-CyberSec-Dev/" target="_blank" rel="noopener noreferrer"><svg class="ic fill"><use href="#i-gh"/></svg>CRB-CyberSec-Dev</a>
+  <a href="https://www.linkedin.com/in/chamal-bandara/" target="_blank" rel="noopener noreferrer"><svg class="ic fill"><use href="#i-in"/></svg>Chamal Ranasinghe Bandara</a>
+  <a href="#about"><svg class="ic"><use href="#i-info"/></svg>About</a>
+</footer>
+<div id="toast" role="status"></div>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+var S=null, busy={}, filled=false, fails=0;
+
+// session expired or signed out elsewhere: any panel CGI answers 401, go back to the login page
+var _fetch=window.fetch.bind(window);
+window.fetch=function(u,o){return _fetch(u,o).then(function(r){
+  if(r.status===401&&String(u).indexOf('cgi-bin/')===0){location.replace('/');throw new Error('login required')}
+  return r;
+})};
+$('bOut').onclick=function(){_fetch('cgi-bin/logout.cgi',{cache:'no-store'}).catch(function(){}).then(function(){location.replace('/')})};
+
+// Dashboard / About views
+function view(){
+  var v=location.hash==='#about'?'about':'dashboard';
+  $('vDash').hidden=v!=='dashboard';$('vAbout').hidden=v!=='about';
+  [].forEach.call(document.querySelectorAll('.tab'),function(t){t.classList.toggle('sel',t.dataset.view===v)});
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',view);view();
+
+function icon(n){return '<svg class="ic"><use href="#i-'+n+'"/></svg>'}
+function toast(m,err){var t=$('toast');t.textContent=m;t.className='show'+(err?' err':'');clearTimeout(toast.t);toast.t=setTimeout(function(){t.className=''},3200)}
+function qs(o){return Object.keys(o).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(o[k]||'')}).join('&')}
+function fmtUp(s){if(!s)return '-';var h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+'h '+m+'m':m?m+'m '+(s%60)+'s':s+'s'}
+
+function call(url,btn,okmsg){
+  if(btn){btn.disabled=true;btn.classList.add('busy')}
+  return fetch(url,{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
+    toast((t||okmsg||'done').trim().split('\n')[0],/refused|unknown|missing|unsupported/i.test(t));
+    return poll();
+  }).catch(function(e){toast('Request failed: '+e,true)}).then(function(){
+    if(btn){btn.classList.remove('busy');btn.disabled=false}render();
+  });
+}
+
+function poll(){
+  return fetch('cgi-bin/status.cgi',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+    S=j;fails=0;$('offline').style.display='none';
+  }).catch(function(){
+    if(++fails>=2)$('offline').style.display='block';
+  });
+}
+
+function render(){
+  if(!S)return;
+  var run=S.running;
+  $('pill').textContent=run?(S.redirect?'PROTECTED':'RUNNING'):'STOPPED';
+  $('pill').className='pill '+(run?(S.redirect?'on':'warn'):'off');
+  $('tdot').className='orb '+(run?'on':'off');
+  $('ttxt').textContent=run?(S.redirect?'Protected':'Tunnel running'):'Tunnel stopped';
+  $('sUp').textContent=run?fmtUp(S.uptime):'-';
+  $('sMem').textContent=run&&S.rss_kb?Math.round(S.rss_kb/1024)+' MB':'-';
+  $('sLoad').textContent=S.load||'-';
+  var bt=$('bToggle');
+  if(!bt.classList.contains('busy')){
+    bt.innerHTML=icon('power')+(run?'Stop tunnel':'Start tunnel');
+    bt.className='grow '+(run?'stop':'start');bt.dataset.act=run?'stop':'start';bt.disabled=false;
+  }
+  $('bRestart').disabled=!run||$('bRestart').classList.contains('busy');
+  $('tHint').textContent=run?(S.redirect?'All devices on this router are being tunneled.':'Tunnel is up, but LAN protection is off: only apps using the proxy go through it.'):'Stopping also turns LAN protection off, so internet keeps working normally.';
+  var rb=$('bRed');
+  rb.classList.toggle('on',S.redirect);
+  if(!rb.classList.contains('busy'))rb.disabled=!run&&!S.redirect;
+  $('rHint').textContent=S.redirect?'On: TCP traffic from every device is tunneled.':(run?'Off: devices connect directly.':'Start the tunnel first.');
+  var um=S.udp_blocked?'block':(S.udp_tunneled?'tunnel':'direct');
+  $('uDirect').classList.toggle('sel',um==='direct');
+  $('uTunnel').classList.toggle('sel',um==='tunnel');
+  $('uBlock').classList.toggle('sel',um==='block');
+  $('uTunnel').disabled=!run&&um!=='tunnel';
+  $('uHint').textContent={tunnel:'UDP (QUIC, DNS, WebRTC, calls) goes through the tunnel and shows the tunnel IP. Uses more router CPU.',block:'UDP blocked (DNS still works). Stops WebRTC IP leaks; calls and games will not work, browsers fall back from QUIC to TCP.',direct:'UDP goes out directly with your real IP. Calls and games work, but WebRTC leak tests show your real IP.'}[um];
+  var cm=S.cipher||'fast';
+  $('cFast').classList.toggle('sel',cm==='fast');
+  $('cCompat').classList.toggle('sel',cm==='compat');
+  $('cHint').textContent=cm==='fast'?'TLS 1.3 with ChaCha20: Chrome-like hello without AES ciphers, about 2x the speed on this router (no AES hardware). If your zoom.com data bundle stops covering the traffic, switch to Compatible.':'TLS 1.3 with the exact Chrome fingerprint (AES-GCM): identical to a normal browser, but about half the speed on this router.';
+  var c=S.config||{};
+  $('cfgSum').textContent=c.addr?(c.proto+' · '+c.addr+':'+c.port+' · '+(c.security==='tls'?'TLS ('+c.sni+')':'no TLS')+' · '+c.network):'Not configured';
+  if(!filled&&c.addr){
+    ['proto','network','security','addr','port','sni','fp','ssmethod','wspath','wshost','pin'].forEach(function(k){if($(k))$(k).value=c[k]||''});
+    $('secret').placeholder=c.has_secret?'saved (leave empty to keep)':'secret';
+    filled=true;
+  }
+}
+
+$('bToggle').onclick=function(){call('cgi-bin/control.cgi?action='+this.dataset.act,this)};
+$('bRestart').onclick=function(){call('cgi-bin/control.cgi?action=restart',this)};
+$('bRed').onclick=function(){call('cgi-bin/control.cgi?action='+(S.redirect?'redirect_off':'redirect_on'),this)};
+$('uDirect').onclick=function(){call('cgi-bin/control.cgi?action=udp_direct',this)};
+$('uTunnel').onclick=function(){call('cgi-bin/control.cgi?action=udp_tunnel',this)};
+$('uBlock').onclick=function(){call('cgi-bin/control.cgi?action=udp_block',this)};
+$('cFast').onclick=function(){call('cgi-bin/control.cgi?action=cipher_fast',this)};
+$('cCompat').onclick=function(){call('cgi-bin/control.cgi?action=cipher_compat',this)};
+
+$('bLink').onclick=function(){
+  var l=$('link').value.trim();if(!l){toast('Paste a link first',true);return}
+  call('cgi-bin/save.cgi?'+qs({link:l,pin:$('pin').value}),this).then(function(){filled=false;$('link').value=''});
+};
+$('bManual').onclick=function(){
+  var f={};['proto','network','security','addr','port','secret','ssmethod','sni','fp','wspath','wshost','pin'].forEach(function(k){f[k]=$(k).value});
+  call('cgi-bin/save.cgi?'+qs(f),this);
+};
+
+$('bIp').onclick=function(){
+  var b=this;b.disabled=true;$('ip').textContent='checking...';
+  var ctl=new AbortController();var to=setTimeout(function(){ctl.abort()},9000);
+  fetch('https://api.ipify.org?format=json',{cache:'no-store',signal:ctl.signal}).then(function(r){return r.json()}).then(function(j){$('ip').textContent=j.ip})
+  .catch(function(){$('ip').textContent='unavailable'}).then(function(){clearTimeout(to);b.disabled=false});
+};
+
+function pollLog(){
+  if(!$('logd').open)return;
+  fetch('cgi-bin/log.cgi',{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){var p=$('log');var end=p.scrollTop+p.clientHeight>=p.scrollHeight-20;p.textContent=t;if(end)p.scrollTop=p.scrollHeight}).catch(function(){});
+}
+$('logd').addEventListener('toggle',pollLog);
+
+var H={cpu:[],dn:[],up:[],x:[]},prev=null,N=60;
+function push(a,v){a.push(v);if(a.length>N)a.shift()}
+function spark(id,a,mx,col){
+  var el=$(id);if(!el||a.length<2)return;
+  var m=mx||Math.max.apply(null,a.concat([1])),pts=a.map(function(v,i){return (i*100/(N-1)).toFixed(1)+','+(29-Math.min(v/m,1)*28).toFixed(1)});
+  var gid='sg'+id,line=pts.join(' '),area='0,30 '+line+' '+pts[pts.length-1].split(',')[0]+',30';
+  el.innerHTML='<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+col+'" stop-opacity=".35"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>'+
+    '<polygon fill="url(#'+gid+')" points="'+area+'"/><polyline fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke" points="'+line+'"/>';
+}
+function rate(b){b*=8;return b>=1e6?(b/1e6).toFixed(1)+' Mbit/s':b>=1e3?(b/1e3).toFixed(0)+' kbit/s':Math.round(b)+' bit/s'}
+function bytes(b){return b>=1e9?(b/1e9).toFixed(2)+' GB':b>=1e6?(b/1e6).toFixed(1)+' MB':Math.round(b/1e3)+' kB'}
+function lvl(el,p){el.style.width=Math.min(p,100)+'%';el.style.background=p>85?'var(--bad)':p>60?'var(--warn)':'linear-gradient(90deg,#10b981,#22d3ee)'}
+function metrics(){
+  if(document.hidden||$('vDash').hidden)return;
+  fetch('cgi-bin/metrics.cgi',{cache:'no-store'}).then(function(r){return r.json()}).then(function(m){
+    var usedMem=m.mem_total-m.mem_free-m.mem_buffers-m.mem_cached,mp=usedMem/m.mem_total*100;
+    $('mRam').textContent=mp.toFixed(0)+'%';lvl($('bRam'),mp);
+    $('mRamSub').textContent=Math.round(usedMem/1024)+' / '+Math.round(m.mem_total/1024)+' MB, cache '+Math.round(m.mem_cached/1024)+' MB';
+    $('mConn').textContent=m.conn;lvl($('bConn'),m.conn_max?m.conn/m.conn_max*100:0);$('mConnSub').textContent='max '+m.conn_max;
+    $('mLoad').textContent=m.load1;$('mLoadSub').textContent='5m '+m.load5+' / 15m '+m.load15;
+    var d=m.sys_uptime,days=Math.floor(d/86400),hr=Math.floor(d%86400/3600);$('mUpt').textContent=days?days+'d '+hr+'h':hr+'h '+Math.floor(d%3600/60)+'m';
+    $('mTemp').textContent=m.temp>0?(m.temp>1000?m.temp/1000:m.temp).toFixed(0)+' °C':'';
+    $('mX').textContent=m.xray_rss?Math.round(m.xray_rss/1024)+' MB':'stopped';
+    $('mR').textContent=m.relay_up?Math.round(m.relay_rss/1024)+' MB':'off';
+    $('mRSub').textContent=m.relay_up?'UDP tunnel relay running':'UDP tunnel not active';
+    if(prev&&m.cpu_total>prev.cpu_total){
+      var dt=Math.max(m.t-prev.t,1),dc=m.cpu_total-prev.cpu_total||1;
+      var cpu=100*(1-(m.cpu_idle-prev.cpu_idle)/dc);cpu=Math.max(0,Math.min(100,cpu));
+      var xc=Math.max(0,Math.min(100,100*(m.xray_ticks-prev.xray_ticks)/dc)),rc=Math.max(0,Math.min(100,100*(m.relay_ticks-prev.relay_ticks)/dc));
+      var dn=Math.max(0,(m.wan_rx-prev.wan_rx)/dt),up=Math.max(0,(m.wan_tx-prev.wan_tx)/dt);
+      $('mCpu').textContent=cpu.toFixed(0)+'%';lvl($('bCpu'),cpu);
+      $('mX').textContent=(m.xray_rss?xc.toFixed(0)+'% / '+Math.round(m.xray_rss/1024)+' MB':'stopped');
+      $('mXSub').textContent='share of total CPU / memory';
+      if(m.relay_up)$('mR').textContent=rc.toFixed(0)+'% / '+Math.round(m.relay_rss/1024)+' MB';
+      $('mDn').textContent=rate(dn);$('mUp').textContent=rate(up);
+      $('mDnSub').textContent='total '+bytes(m.wan_rx);$('mUpSub').textContent='total '+bytes(m.wan_tx);
+      push(H.cpu,cpu);push(H.dn,dn);push(H.up,up);push(H.x,xc);
+      spark('gCpu',H.cpu,100,'#34d399');spark('gDn',H.dn,0,'#22d3ee');spark('gUp',H.up,0,'#fbbf24');spark('gX',H.x,100,'#c084fc');
+    }
+    prev=m;$('monAge').textContent='live';$('monAge').className='aside live';
+  }).catch(function(){$('monAge').textContent='offline';$('monAge').className='aside live dead'});
+}
+metrics();setInterval(metrics,2000);
+poll().then(render);
+setInterval(function(){poll().then(render)},3000);
+setInterval(pollLog,4000);
+</script>
+</body>
+</html>

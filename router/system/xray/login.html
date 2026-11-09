@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#060914">
+<title>Sign in · V2Ray for Huawei</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%23c084fc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M9 9l7 15 7-15' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="theme.css">
+<style>
+body{display:flex;flex-direction:column}
+.center{flex:1;display:flex;align-items:center;justify-content:center;padding:28px 16px 0}
+.box{width:100%;max-width:400px}
+.head{text-align:center;margin-bottom:22px}
+.head .logo{width:64px;height:64px;border-radius:19px;margin:0 auto 14px;box-shadow:0 14px 40px -10px rgba(129,140,248,.9);animation:float 6s ease-in-out infinite}
+.head .logo svg{width:36px;height:36px}
+@keyframes float{50%{transform:translateY(-5px)}}
+.head h1{margin:0;font-size:28px;font-weight:820;letter-spacing:-.03em}
+.head h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.head .by{display:inline-block;margin-top:4px;font-size:13px;color:var(--mut)}
+.head .by:hover{color:var(--c1);text-decoration:none}
+form{padding:24px;position:relative;overflow:hidden}
+form::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(400px 160px at 50% 0%,rgba(34,211,238,.1),transparent 70%)}
+form h2{margin:0;font-size:17px;font-weight:720}
+form p{margin:4px 0 4px;font-size:13px;color:var(--mut)}
+.field{position:relative}
+.field .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none}
+.field input{padding-left:40px}
+button[type=submit]{width:100%;margin-top:20px}
+#err{display:none;margin-top:14px;padding:10px 12px;border-radius:12px;background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.35);color:#fecdd3;font-size:13px}
+.secure{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:12px;color:var(--dim)}
+.secure .ic{width:14px;height:14px}
+.dev{display:flex;align-items:center;gap:12px;margin-top:14px;padding:14px 16px}
+.dev .av{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:820;color:#fff;background:var(--grad)}
+.dev .t{flex:1;min-width:0}
+.dev b{display:block;font-size:14px;line-height:1.3}
+.dev span{font-size:12px;color:var(--mut)}
+.dev a{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--txt);background:rgba(148,163,255,.08);box-shadow:inset 0 0 0 1px var(--line2)}
+.dev a:hover{background:rgba(148,163,255,.16)}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><i class="grid"></i><i class="noise"></i></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.42.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .3"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></symbol>
+</svg>
+
+<div class="center"><div class="box">
+  <div class="head">
+    <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l7 13 7-13"/></svg></div>
+    <h1><span>V2Ray</span> for Huawei</h1>
+    <a class="by" href="https://github.com/CRB-CyberSec-Dev/" target="_blank" rel="noopener noreferrer">by CRB-CyberSec-Dev</a>
+  </div>
+
+  <form id="f" class="glass" autocomplete="on">
+    <h2>Sign in</h2>
+    <p>Use the router's admin account, the same login as the router web page.</p>
+    <label for="u">Username</label>
+    <div class="field"><svg class="ic"><use href="#i-user"/></svg><input id="u" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" value="admin" required></div>
+    <label for="p">Password</label>
+    <div class="field"><svg class="ic"><use href="#i-lock"/></svg><input id="p" name="password" type="password" autocomplete="current-password" required autofocus></div>
+    <button id="b" type="submit">Sign in</button>
+    <div id="err" role="alert"></div>
+    <div class="secure"><svg class="ic"><use href="#i-shield"/></svg>Your password is hashed in this browser and never sent</div>
+  </form>
+
+  <div class="glass dev">
+    <div class="av">CRB</div>
+    <div class="t"><b>Chamal Ranasinghe Bandara</b><span>Developer · CRB-CyberSec-Dev</span></div>
+    <a href="https://github.com/CRB-CyberSec-Dev/" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><svg class="ic fill"><use href="#i-gh"/></svg></a>
+    <a href="https://www.linkedin.com/in/chamal-bandara/" target="_blank" rel="noopener noreferrer" title="LinkedIn" aria-label="LinkedIn"><svg class="ic fill"><use href="#i-in"/></svg></a>
+  </div>
+</div></div>
+<footer class="foot"><span>V2Ray for Huawei · Panel 1.0</span></footer>
+
+<script>
+// SHA-256 of a UTF-8 string -> hex. crypto.subtle only exists on https/localhost, so it's done by hand.
+function sha256(str){
+  var s=unescape(encodeURIComponent(str)),K=[],H=[],i,j,n=2,k=0,w=[],bits=s.length*8;
+  function prime(x){for(var d=2;d*d<=x;d++)if(x%d===0)return false;return true}
+  function frac(x){return (x-Math.floor(x))*4294967296|0}
+  for(;k<64;n++)if(prime(n)){if(k<8)H[k]=frac(Math.pow(n,1/2));K[k++]=frac(Math.pow(n,1/3))}
+  function rr(x,c){return (x>>>c)|(x<<(32-c))}
+  s+='\x80';while(s.length%64!==56)s+='\x00';
+  for(i=0;i<s.length;i++)w[i>>2]|=s.charCodeAt(i)<<((3-i%4)*8);
+  w.push(Math.floor(bits/4294967296),bits|0);
+  for(j=0;j<w.length;j+=16){
+    var m=w.slice(j,j+16),a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+    for(i=0;i<64;i++){
+      if(i>=16){var x=m[i-15],y=m[i-2];m[i]=(m[i-16]+(rr(x,7)^rr(x,18)^(x>>>3))+m[i-7]+(rr(y,17)^rr(y,19)^(y>>>10)))|0}
+      var t1=(h+(rr(e,6)^rr(e,11)^rr(e,25))+((e&f)^(~e&g))+K[i]+m[i])|0;
+      var t2=((rr(a,2)^rr(a,13)^rr(a,22))+((a&b)^(a&c)^(b&c)))|0;
+      h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;
+    }
+    H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+  }
+  return H.map(function(v){return ('00000000'+(v>>>0).toString(16)).slice(-8)}).join('');
+}
+// same as the router's own login page (password_type 4)
+function routerHash(u,p,t){return btoa(sha256(u+btoa(sha256(p))+t))}
+
+var f=document.getElementById('f'),b=document.getElementById('b'),e=document.getElementById('err');
+function json(r){return r.json()}
+f.onsubmit=function(ev){
+  ev.preventDefault();
+  b.disabled=true;b.classList.add('busy');e.style.display='none';
+  var u=f.u.value,p=f.p.value;
+  fetch('cgi-bin/login.cgi?challenge',{cache:'no-store'}).then(json).then(function(c){
+    if(!c.ok)throw new Error(c.msg||'Login failed');
+    var body='c='+c.c+'&u='+encodeURIComponent(u)+'&h='+encodeURIComponent(routerHash(u,p,c.t));
+    return fetch('cgi-bin/login.cgi',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body,cache:'no-store'}).then(json);
+  }).then(function(j){
+    if(j.ok){location.replace('/');return}
+    throw new Error(j.msg||'Login failed');
+  }).catch(function(x){
+    e.textContent=x.message==='Failed to fetch'?'Cannot reach the router':x.message;e.style.display='block';
+    f.p.value='';f.p.focus();b.disabled=false;b.classList.remove('busy');
+  });
+};
+</script>
+</body>
+</html>

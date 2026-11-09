@@ -1,0 +1,20 @@
+# release binaries (download from GitHub Releases into bin/)
+bin/
+*.exe
+src/udprelay/udprelay
+tools/cipherbench/cipherbench
+
+# never commit real tunnel settings or router dumps
+router/data/xray/xray.conf
+router/data/xray/config.json
+*.conf
+!*.conf.example
+*.bin
+*.BIN
+*.img
+*.b64
+LIVE_BACKUP/
+
+# local build trees
+build/
+Xray-core/
